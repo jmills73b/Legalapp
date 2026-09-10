@@ -1,235 +1,251 @@
-# Legal Document Agent System — Design
+# Family Law Correspondence — Agent System Design
 
-## 1. The core problem with the naive approach
+**Jurisdiction:** England & Wales
+**Scope:** solicitors' correspondence in family matters — primarily letters
+**PII posture (v1):** generic output with typed placeholders; no client data enters the system
 
-The obvious design is "one big prompt → document." It fails on legal work for four specific reasons:
+---
 
-1. **Contracts are compositional, not generative.** A contract is a bundle of clauses. 80–90% of any given document is boilerplate with parameters. Generating that from scratch every time is expensive, slow, and non-deterministic — three properties you do not want in a legal instrument.
-2. **Hallucinated law is a hard failure.** A wrong adjective is a style issue. A statute that doesn't exist is a liability event.
-3. **Jurisdiction is a hard constraint, not a stylistic hint.** A non-compete clause that's fine in Texas is void in California. This is a lookup, not a judgement call.
-4. **You need an audit trail.** "Why does the document say this?" must have an answer better than "the model chose to."
+## 1. Thesis
 
-So the architecture below is **template-and-retrieval first, with LLM agents doing the parts that genuinely require reasoning**: understanding the request, drafting novel language, and adversarial review.
+A family law letter is not a document to be generated. It is a **known form, assembled from
+a paragraph library**, with two or three paragraphs of genuinely bespoke content in the middle.
+A firm sends perhaps thirty recurring letter types, over and over.
 
-## 2. Pipeline
+So the request supplies *intent*, the library supplies *form*, and — in v1 — nothing at all
+supplies the facts. The letter comes out with typed placeholders where PII belongs, and a
+fee earner fills them in.
 
-```mermaid
-flowchart TD
-    A[Freeform request<br/>'mutual NDA, Delaware, 2yr, Acme + Jane Doe'] --> B[Intake Agent]
-    B --> C[MatterSpec JSON]
-    C --> D[Planner]
-    D --> E[DocumentPlan<br/>ordered clause list]
-    E --> F{Per clause}
-    F -->|library match| G[Fill from Clause Library]
-    F -->|no match| H[Drafting Agent]
-    F -->|law-dependent| I[Research Agent<br/>retrieval-grounded]
-    G --> J[Assembled Draft]
-    H --> J
-    I --> J
-    J --> K[Validator<br/>deterministic checks]
-    K -->|findings| L[Patch Agent<br/>fixes named clauses only]
-    L --> K
-    K -->|clean| M[Reviewer Agent<br/>adversarial / opposing counsel]
-    M -->|findings| L
-    M -->|clean| N[Formatter → DOCX / PDF]
-    N --> O[Human attorney review gate]
+That last decision is not a limitation. It is the single best property of the design.
+
+## 2. The PII posture, and why it inverts a validator
+
+Because letters are generated generically, **no client-confidential data ever enters a model
+context.** Three consequences follow, and they shape everything downstream:
+
+1. **You can build and test this against real letter types without a single real matter.**
+   No data processing agreement, no retention decision, no anonymisation pipeline before
+   you can start.
+2. **Placeholders are the intended output, not a defect.** In a contract system, a leftover
+   `[PARTY]` is a bug. Here it is the product.
+3. **The critical failure mode flips.** The dangerous output is not a missing placeholder —
+   it is **invented PII**. A model that helpfully writes "Sarah Thompson" instead of emitting
+   `[CLIENT_FULL_NAME]` has produced a letter that looks complete and is wrong in a way a
+   busy fee earner may not catch.
+
+So the flagship deterministic check becomes: **no name-shaped, date-shaped, address-shaped or
+reference-shaped token may appear outside a declared placeholder.** Everything else is caught
+by the same scan.
+
+### The token dictionary
+
+Each placeholder is typed, not just named:
+
+| Token | Type | Notes |
+|---|---|---|
+| `[CLIENT_FULL_NAME]` | person | required in every letter |
+| `[OTHER_PARTY_NAME]` | person | |
+| `[CHILD_1_NAME]`, `[CHILD_1_DOB]` | person, date | repeats per child |
+| `[MATTER_REF]` | reference | firm's own reference |
+| `[CASE_NO]` | reference | court case number, where issued |
+| `[HEARING_DATE]` | date | |
+| `[RESPONSE_DEADLINE]` | date | derived, not typed — see §6 |
+| `[FEE_EARNER_NAME]`, `[FEE_EARNER_ROLE]` | person, text | |
+| `[FIRM_ADDRESS_BLOCK]` | address | suppressed where confidentiality applies |
+
+Every generated letter ships with a **fill sheet**: the tokens it used, their types, and a
+one-line description of each. That sheet is also the integration seam — when a case management
+system is added later, it maps to these tokens and nothing else in the design changes.
+
+## 3. Pipeline
+
+```
+request ──▶ Intake ──▶ LetterSpec ──▶ Compose ──▶ Assemble ──▶ Validate ──▶ Tone & Conduct ──▶ Risk Review ──▶ Format
+             (model)                   (model)     (code)       (code)        (model)            (model)        (code)
+                                          │                        ▲              │                  │
+                                          └──── paragraph library  └──────────────┴── patch loop ────┘
 ```
 
-## 3. Agent roster
+Four model stages, four code stages. Risk Review runs only on letters leaving the firm.
 
-Lean on purpose. Every agent added is latency, cost, and a new failure mode. Five agents plus deterministic code covers it.
+## 4. Agent roster
 
-### 3.1 Intake Agent — *understand the ask*
+Four agents. One fewer than the contract design, because letters need no research agent —
+family correspondence rarely cites authority, and where it does, it cites the same handful
+of provisions the library already contains.
 
-**In:** one freeform paragraph. **Out:** a `MatterSpec` JSON object.
+### 4.1 Intake
+**In:** letter type plus a line of intent. **Out:** a `LetterSpec`.
 
-Its job is **not** to interrogate the user. It extracts what it can, applies sane defaults to what it can't, and records every guess in an explicit `assumptions[]` array. This is what makes the system one-shot by default: you always get a document on the first call, plus a list of what it had to assume.
+Resolves which letter type is being asked for, who the recipient is (client / other side's
+solicitors / litigant in person / court), the posture, and which tokens the letter will need.
+Recipient class is the most important field it sets — it determines the entire review path (§4.4).
 
-It escalates to a question **only** when a term is material and undefaultable — usually the parties, the governing jurisdiction, and the consideration/price. Cap it at 3 questions, ever.
+### 4.2 Composer
+**In:** LetterSpec + paragraph library. **Out:** paragraph sequence.
 
-### 3.2 Planner — *choose the clauses*
+Pulls standard paragraphs by ID and drafts only the bespoke middle. Runs per paragraph, so
+it cannot drift across the letter.
 
-Mostly deterministic. Given `(doc_type, jurisdiction, risk_posture)` it pulls a base template and resolves it against the **Clause Policy Matrix** (§5). Emits a `DocumentPlan`: an ordered list of sections, each tagged `library` / `draft` / `research`.
+> **Hard rule:** may not emit a name, date, address, sum of money or case reference as
+> literal text. Every such value is a declared token. This is enforced by §6, not by asking
+> the model nicely.
 
-Only the "which optional clauses does this deal actually warrant" decision needs a model.
+### 4.3 Tone & Conduct — *the flagship*
+**In:** assembled draft. **Out:** structured findings.
 
-### 3.3 Drafting Agent — *write the language that isn't in the library*
+See §5. Runs on every letter, including letters to the client.
 
-Runs **per clause, in parallel**. Small, tightly scoped prompts: here is the clause slot, here is the spec, here is the house style, here are two examples of adjacent clauses. Never sees the whole document, so it can't drift.
+### 4.4 Risk Review
+**In:** draft leaving the firm. **Out:** structured findings.
 
-Hard rule: it may not assert any proposition of law. If it needs one, it emits a `research_request` and the Research Agent handles it.
+A different lens from tone, and a different cadence — this one runs only on outbound
+correspondence to anyone other than the client:
 
-### 3.4 Research Agent — *ground anything law-dependent*
+- Does the letter make an **admission** the client has not authorised?
+- Does it **disclose** something not yet disclosable — a financial fact, an address, the
+  existence of advice taken?
+- Is it correctly marked, or correctly *not* marked, **Without Prejudice**?
+- Does it inadvertently give advice to an **unrepresented** recipient?
+- Does it commit the client to a position the LetterSpec did not authorise?
 
-Retrieval only. Answers questions like "is a 3-year non-compete enforceable for a CA employee?" against a statute/caselaw corpus.
+Letters to the client take the other path entirely: they contain advice, so they are always
+attorney-reviewed and carry costs-information duties under the SRA Transparency Rules.
 
-Hard rule: **no source, no claim.** If it can't cite, it returns `unknown`, and the orchestrator strips the dependent language and flags it for human review rather than letting the model fill the gap.
+## 5. Tone & Conduct
 
-### 3.5 Reviewer Agent — *read it as opposing counsel*
+In contract drafting, tone is style. In family law it is a professional obligation with a
+price attached. Most family solicitors here practise under the **Resolution Code of Practice**,
+which requires constructive, non-confrontational correspondence — and in financial remedy
+proceedings the general rule is no order as to costs (FPR 28.3(6)), *subject to* the court
+taking a broad view of litigation conduct, which includes how a party has corresponded and
+negotiated (PD28A para 4.4). An inflammatory letter can cost the client money directly.
 
-Runs once, on a draft that has already passed the deterministic gate. Returns **structured findings**, never a rewritten document:
+### The deterministic half
 
-```json
-{"clause_id": "7.2", "severity": "high", "type": "one_sided",
- "finding": "Indemnity runs only to Discloser; spec says posture=mutual.",
- "suggested_fix": "Mirror the obligation for Recipient."}
-```
+Inflammatory correspondence is formulaic, so a banned-phrase lexicon catches most of it for free:
 
-Findings route to the Patch Agent, which edits *only the named clauses*. See §4.
+- "We note with some surprise…", "It is regrettable that…", "As you are well aware…"
+- "your client has singularly failed…", "we are frankly astonished…"
+- Rhetorical questions addressed to the other side
+- Adjectives characterising the other party's conduct: *outrageous, unreasonable, blatant,
+  deliberate* (as applied to a person rather than a described act)
 
-### 3.6 Not an agent: the Validator
+### The model half
 
-**This is the most important design call in the document.** Most of what people build as a "validation agent" should be plain code:
+- Is every position stated **as a position**, rather than as an accusation?
+- Does the letter **propose something**? A letter that only demands has nowhere to go.
+- Is any deadline framed neutrally, **with a reason**, and is it long enough to be reasonable?
+- Is the language **child-focused** — arrangements for the children, not rights over them?
+- For a **first letter to an unrepresented person**: is it non-threatening, does it explain
+  plainly what is happening, and does it encourage them to take their own legal advice?
+  Resolution's guidance on first letters is specific, and this check should be too.
+
+## 6. Deterministic checks
+
+Per the core thesis: if a check can be written as an assertion, it must not be an agent.
 
 | Check | Implementation |
 |---|---|
-| Placeholder leakage (`[PARTY]`, `TBD`) | regex |
-| Defined terms used but never defined | parse `"X" means` + capitalised-token scan |
-| Defined terms defined but never used | same |
-| Cross-references to non-existent sections | parse + graph check |
-| Numbering gaps / duplicates | walk the tree |
-| Party names inconsistent | string set |
-| Dates that don't order (term ends before it starts) | date math |
-| Amounts: words vs. digits disagree | number parse |
-| Required clauses missing for this jurisdiction | Clause Policy Matrix lookup |
-| Forbidden clauses present | Clause Policy Matrix lookup |
+| **Invented PII** — literal name/date/address/reference outside a token | pattern scan + token allowlist |
+| Token declared but never used, or used but never declared | set difference |
+| Token type mismatch (a date token in a name slot) | dictionary lookup |
+| **Deprecated terminology** — see below | lexicon |
+| **Without Prejudice** marking consistent with letter type | letter-type policy |
+| **Address suppression** where confidentiality applies | letter-type flag → block letterhead token |
+| Enclosures listed vs. enclosures attached | list comparison |
+| Deadline stated but no diary entry created | integration assertion |
+| Letter type's required paragraphs all present | template check |
 
-Every one is fast, free, and 100% reliable. An LLM does all of them at ~95% reliability, for money, slowly. Reserve the model for the genuinely semantic check — "does clause 7 contradict clause 12?" — and run that as part of the Reviewer.
+### Deprecated terminology
 
-Rule of thumb: **if a check can be written as an assertion, it must not be an agent.**
+This one is worth building on day one. English family law renamed a great deal, and a letter
+using the old vocabulary reads as dated to any other solicitor who receives it:
 
-### 3.7 Formatter
+| Do not use | Correct term | Since |
+|---|---|---|
+| custody, access | child arrangements; "lives with" / "spends time with" | 2014 |
+| residence order, contact order | child arrangements order | 2014 |
+| ancillary relief | financial remedy | 2011 |
+| petition, petitioner | application, applicant | 2022 |
+| decree nisi | conditional order | 2022 |
+| decree absolute | final order | 2022 |
+| unreasonable behaviour (as a ground) | irretrievable breakdown (statement of) | 2022 |
 
-Deterministic. Template → DOCX/PDF: numbering scheme, TOC, defined-terms index, signature blocks, exhibits. Use `docx`/`docxtpl`; do not have a model produce markup.
-
-## 4. The revision loop — patch, don't regenerate
-
-The failure mode of naive review loops is non-convergence: the model rewrites the whole document to fix one clause, which breaks two others, which triggers new findings, forever.
-
-Fix: findings are **addressed to clause IDs**, and the Patch Agent is given only that clause plus its dependencies. The rest of the document is byte-identical between iterations.
-
-- Deterministic validator: runs every iteration (it's free).
-- Reviewer: runs on a clean draft, max 2 passes.
-- Loop cap: 3. On exhaustion, ship the draft with unresolved findings attached as a review memo rather than looping forever.
-
-## 5. The Clause Policy Matrix — jurisdiction rules as data
-
-Keyed on `(doc_type, jurisdiction, clause_id)`:
-
-```yaml
-- doc_type: employment_agreement
-  jurisdiction: US-CA
-  clause_id: non_compete
-  rule: forbidden
-  authority: "Cal. Bus. & Prof. Code § 16600"
-  note: "Void except narrow sale-of-business exception."
-
-- doc_type: nda
-  jurisdiction: US-CA
-  clause_id: trade_secret_carveout
-  rule: required
-  authority: "18 U.S.C. § 1833(b) (DTSA whistleblower notice)"
-```
-
-Why this matters: it's **auditable, editable by a lawyer who doesn't touch prompts, and deterministic**. Jurisdiction logic buried in a system prompt is untestable and silently drifts between model versions. Here it's a table you can diff, review, and unit-test.
-
-## 6. The Clause Library is the actual asset
-
-Agents improve slowly (you're waiting on model releases). The clause library improves every time someone uses the system.
-
-Each entry: `id`, `text` (with typed slots), `doc_types[]`, `jurisdictions[]`, `posture` (pro-discloser / mutual / pro-recipient), `tags[]`, `provenance`, `last_reviewed_by`, `last_reviewed_at`.
-
-**Capture the feedback loop from day one:** when a human edits generated output, diff it against what was produced and offer the delta back as a library revision. Six months of that beats any amount of prompt tuning.
+Pure lexicon. Free, instant, and it catches a class of error that a model would only sometimes spot.
 
 ## 7. Interface
 
-One entry point. Everything else is optional detail.
+```
+$ legalapp letter form-e-chaser --deadline 14d \
+    --note "flag we will seek directions if no response"
 
-```python
-doc = legalapp.draft(
-    "Mutual NDA between Acme Inc (Delaware) and Jane Doe, "
-    "2 year term, covers product roadmap discussions."
-)
+✓ Financial disclosure chaser — to other side's solicitors
+  → form-e-chaser.docx  ·  fill-sheet.md
 
-doc.text            # the document
-doc.assumptions     # what intake had to guess
-doc.open_questions  # what it couldn't resolve
-doc.findings        # unresolved reviewer findings
-doc.save("nda.docx")
+  Tokens to complete (6)
+  · [CLIENT_FULL_NAME]      person
+  · [OTHER_PARTY_NAME]      person
+  · [MATTER_REF]            reference
+  · [CASE_NO]               reference   optional — omit if not yet issued
+  · [RESPONSE_DEADLINE]     date        derived: 14 days from date of letter
+  · [FEE_EARNER_NAME]       person
+
+  Tone & conduct: clear
+  Risk review:    1 note
+  · Para 4 sets a deadline without stating a reason for it —
+    consider "so that we can meet the directions timetable".
+
+$ legalapp letters                    # list available letter types
+$ legalapp revise form-e-chaser.docx "soften para 4, offer a call"
 ```
 
-CLI:
+One `LetterSpec` JSON is the seam between every component — letter type, recipient class,
+posture, intent, tokens required, deadline. It is diffable and re-runnable, so "the same
+letter but to a litigant in person" is a one-field change.
 
-```
-$ legalapp draft "mutual NDA, Delaware, 2yr, Acme Inc + Jane Doe"
-✓ Drafted: Mutual Non-Disclosure Agreement (Delaware)  [nda.docx]
+## 8. Letter catalogue — build these first
 
-  Assumptions (3)
-    • Term: 2 years from Effective Date; survival 3 years post-term
-    • Governing law: Delaware (from Acme's state of incorporation)
-    • Notice: email permitted
+Ordered by volume, not by interest:
 
-  Open questions (1)
-    • Jane Doe's notice address not supplied — placeholder inserted
+1. Client care / engagement letter *(SRA client care + costs information)*
+2. First letter to an unrepresented other party *(highest tone risk in the whole catalogue)*
+3. First letter to the other side's solicitors
+4. Proposal to engage in non-court dispute resolution / MIAM
+5. Voluntary financial disclosure request
+6. Financial disclosure chaser *(Form E)*
+7. Child arrangements proposal — Without Prejudice
+8. Letter to client reporting on a hearing, with next steps
+9. Letter enclosing a court order, explaining its effect
+10. NCDR position correspondence *(FM5)*
 
-$ legalapp revise nda.docx "make the term 3 years and add a non-solicit"
-```
-
-UI: a single textarea, a document pane, and a right-hand rail with three collapsible sections — Assumptions, Open Questions, Findings. Each item deep-links to the clause it affects. That rail *is* the product; the document is table stakes.
-
-### MatterSpec — the contract everything speaks
-
-```json
-{
-  "doc_type": "nda",
-  "jurisdiction": "US-DE",
-  "parties": [
-    {"role": "discloser", "name": "Acme Inc", "entity_type": "corporation", "state": "DE"},
-    {"role": "recipient", "name": "Jane Doe", "entity_type": "individual"}
-  ],
-  "posture": "mutual",
-  "terms": {"duration_months": 24, "survival_months": 36, "purpose": "product roadmap discussions"},
-  "required_clauses": [],
-  "excluded_clauses": [],
-  "assumptions": [
-    {"field": "terms.survival_months", "value": 36, "basis": "default for mutual NDA"}
-  ],
-  "open_questions": [
-    {"field": "parties[1].notice_address", "why": "not supplied", "blocking": false}
-  ]
-}
-```
-
-One JSON object, versioned, is the seam between every component. A spec is reusable, diffable, and storable — "same NDA but Texas law" is a one-field edit and a re-run, not a new conversation.
-
-## 8. Model routing
-
-| Stage | Model | Why |
-|---|---|---|
-| Intake | small/fast | structured extraction |
-| Planner | small/fast | mostly lookups |
-| Clause fill (library match) | none — code | pure substitution |
-| Drafting novel clauses | frontier | this is the hard part |
-| Research | frontier + retrieval | precision matters |
-| Reviewer | frontier | adversarial reasoning |
-| Validator | none — code | assertions |
-| Formatter | none — code | templating |
-
-Most of a typical run is code. That's the point: it makes the system fast, cheap, and reproducible, and concentrates model spend where reasoning actually happens.
+Ten letter types working properly beats thirty half-built. Numbers 2 and 8 carry the most
+risk and should get the most review attention.
 
 ## 9. Guardrails
 
-- **Attorney review gate.** Output is a draft for review, never a filed or executed instrument. Ship it with that framing in the product, not just in a footer.
-- **No unsourced legal propositions.** Enforced structurally (§3.4), not by asking the model nicely.
-- **Full provenance.** Every clause records its origin: library ID + version, or generated (with the spec hash and model version). "Why does it say this?" always has an answer.
-- **Immutable run log.** Spec, plan, clause sources, findings, and human edits, retained per matter.
-- **Confidentiality.** Matter content is client-confidential; decide retention/training policy explicitly before onboarding a real user.
+- **Every letter is a draft for a solicitor to check and sign.** Nothing is sent by the system.
+- **No PII in model context (v1).** Structural, and the strongest privacy position available.
+  Preserve it deliberately when a case management system is added later — send the *shape* of
+  the matter, not its contents, wherever that is possible.
+- **Provenance per paragraph.** Library ID and version, or generated with the spec hash and
+  model version.
+- **The tone lexicon is firm property.** It encodes the firm's house standard for correspondence
+  and should be reviewed by a partner, not inferred from a model.
+- **Advice to clients is never auto-approved.** Path in §4.4 is not optional.
 
 ## 10. Build order
 
-1. `MatterSpec` schema + Intake Agent. Prove one paragraph → clean spec.
-2. Deterministic Validator. Cheap, immediately useful, and it de-risks everything downstream.
-3. Clause Library + Formatter for **one** document type (NDA — small, well-understood, high volume). End-to-end on one doc type beats half of five.
-4. Reviewer Agent + patch loop.
-5. Clause Policy Matrix, seeded with 2–3 jurisdictions.
-6. Research Agent — last, because it needs a real corpus and is the easiest to get dangerously wrong.
+1. **Token dictionary + the invented-PII check.** Before any drafting. It is the safety property
+   the whole design rests on, and it is testable on letters you already have.
+2. **Deprecated terminology lexicon.** An afternoon's work; immediately useful on existing
+   precedents even before an agent exists.
+3. **Paragraph library + Composer + Formatter, for letter types 5 and 6.** Low risk, high volume,
+   short letters. End to end on two types beats a start on ten.
+4. **Tone & Conduct**, lexicon half first, then the model half.
+5. **Risk Review**, and the split between client-path and outbound-path.
+6. **Letter types 1, 2, 3, 7–10**, in that order.
+
+The paragraph library is the asset, not the prompts. When a fee earner edits a generated letter,
+diff it and offer the delta back as a library revision — that loop is what makes this improve
+week over week, and it is worth building before it feels necessary.
