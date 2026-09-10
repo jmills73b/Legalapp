@@ -83,3 +83,16 @@ def test_party_names_in_a_case_style_are_caught(text):
 def test_case_style_does_not_fire_on_reported_authority_in_vocabulary():
     # A genuine placeholder Re line stays clean.
     assert scan("Re: [CLIENT_FULL_NAME] and [OTHER_PARTY_NAME] -- financial remedy") == []
+
+
+def test_overlapping_detectors_report_a_name_once():
+    # "Dear Mr Okafor" matches the title rule and the capitalised-run rule at
+    # different offsets; the fee earner should see one finding, not three.
+    found = scan("Dear Mr Okafor")
+    assert len(found) == 1, [f.excerpt for f in found]
+    assert found[0].excerpt == "Mr Okafor"
+
+
+def test_distinct_names_are_still_reported_separately():
+    found = scan("We act for Ayesha Kaur in her matter against Daniel Kaur.")
+    assert {f.excerpt for f in found} == {"Ayesha Kaur", "Daniel Kaur"}

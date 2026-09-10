@@ -42,3 +42,46 @@
   required_paragraphs: [hdr_refs, hdr_subject_financial, signoff_faithfully]
   enclosures: []
   bespoke_slot: "Any matter-specific framing of why voluntary exchange suits this case."
+
+- id: first_letter_unrepresented
+  name: First letter to an unrepresented other party
+  recipient_class: litigant_in_person
+  contains_advice: false
+  wp_marking: forbidden
+  requires_deadline: true
+  default_deadline_days: 28
+  min_deadline_days: 21          # an unrepresented person needs time to take advice
+  salutation_style: named        # "Dear <name>" -> "Yours sincerely"
+  plain_language: true           # terms of art must be explained
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_lip
+    - lip_who_we_are
+    - lip_purpose
+    - lip_own_advice
+    - lip_reply_when_ready
+    - lip_no_threat_close
+    - signoff_sincerely
+  required_paragraphs: [hdr_refs, hdr_subject_lip, lip_own_advice, signoff_sincerely]
+  enclosures: []
+  bespoke_slot: "What our client proposes, in plain language, with no terms of art."
+
+- id: client_hearing_report
+  name: Report to client on a hearing, with next steps
+  recipient_class: client
+  contains_advice: true          # always takes the reviewed path
+  wp_marking: forbidden
+  requires_deadline: true
+  default_deadline_days: 14
+  salutation_style: named
+  costs_information: true        # SRA Transparency Rules
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_client
+    - client_hearing_outcome
+    - client_next_steps
+    - client_costs_update
+    - signoff_sincerely
+  required_paragraphs: [hdr_refs, hdr_subject_client, client_costs_update, signoff_sincerely]
+  enclosures: []
+  bespoke_slot: "What the court actually ordered, and what it means for the client."

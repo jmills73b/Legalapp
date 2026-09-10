@@ -1,4 +1,4 @@
-from . import pii, structure, terminology, tone  # noqa: F401
+from . import pii, register, structure, terminology, tone  # noqa: F401
 
 
 def run_all(letter, *, to_other_side: bool | None = None) -> list:
@@ -12,7 +12,7 @@ def run_all(letter, *, to_other_side: bool | None = None) -> list:
     if to_other_side is None:
         to_other_side = letter.spec.recipient_class.is_outbound
     vocab = library.vocabulary()
-    findings = list(structure.scan(letter))
+    findings = list(structure.scan(letter)) + list(register.scan(letter))
     for para in letter.paragraphs:
         findings += pii.scan(para.text, para.id, extra_vocab=vocab)
         findings += terminology.scan(para.text, para.id)

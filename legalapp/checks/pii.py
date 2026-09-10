@@ -137,7 +137,10 @@ def scan(text: str, paragraph_id: str = "letter", extra_vocab: set[str] | None =
     vocab = LEGAL_VOCAB | (extra_vocab or set())
     masked = _mask(text)
     findings: list[Finding] = []
-    seen: set[tuple[int, str]] = set()
+    # Keyed on the excerpt, not its offset: overlapping detectors find the same
+    # name at different starts ("Dear Mr Okafor" vs "Mr Okafor") and a fee
+    # earner should see it once.
+    seen: set[str] = set()
 
     for pattern, kind in _DETECTORS:
         for m in pattern.finditer(masked):
@@ -154,7 +157,7 @@ def scan(text: str, paragraph_id: str = "letter", extra_vocab: set[str] | None =
                     if len(unknown) < 2:
                         continue
                     excerpt = " ".join(unknown)
-            key = (m.start(), excerpt)
+            key = excerpt.lower()
             if key in seen:
                 continue
             seen.add(key)

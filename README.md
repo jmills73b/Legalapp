@@ -23,8 +23,19 @@ interface contract, and build order.
 | Deprecated terminology lexicon | done — auto-fixed, never silent |
 | Tone lexicon (deterministic half) | done |
 | Structure checks — WP marking, address suppression, enclosures | done |
-| Paragraph library + composer + local merge | done, for 2 letter types |
+| Register checks — salutation/sign-off, deadline floor, plain language, advice to a litigant in person | done |
+| Paragraph library + composer + local merge | done, for 4 letter types |
+| Client vs outbound review split | done |
 | Intake and review agents | written against the Claude API, not yet exercised live |
+
+### Letter types
+
+| Type | To | Notes |
+| --- | --- | --- |
+| `voluntary_disclosure_request` | other side's solicitors | |
+| `form_e_chaser` | other side's solicitors | |
+| `first_letter_unrepresented` | litigant in person | plain-language and no-advice checks; 21-day deadline floor |
+| `client_hearing_report` | client | contains advice; costs-information paragraph required |
 
 `legalapp check` runs over any letter you already have — no drafting required.
 

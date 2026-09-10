@@ -121,3 +121,105 @@
   version: 1
   text: |
     Enc: Form E of [CLIENT_FULL_NAME]
+
+# --- correspondence to an unrepresented person -------------------------------
+# The highest tone risk in the catalogue. The register changes completely:
+# plain language, a longer deadline, no advice, and an explicit steer to get
+# their own solicitor.
+
+- id: hdr_subject_lip
+  role: heading
+  version: 1
+  text: |
+    Dear [OTHER_PARTY_NAME]
+
+    Re: arrangements following your separation from [CLIENT_FULL_NAME]
+
+- id: lip_who_we_are
+  role: body
+  version: 1
+  text: >
+    We are solicitors and we act for [CLIENT_FULL_NAME]. We are writing to you
+    directly because we understand you do not have a solicitor at the moment. We
+    appreciate that receiving a letter from a firm of solicitors can be
+    unsettling, and we want to explain plainly why we are writing.
+
+- id: lip_purpose
+  role: body
+  version: 1
+  text: >
+    Our client would like to reach an agreement with you about the practical
+    arrangements that need to be settled between you. Nothing has been decided,
+    and this letter is not a court document. It is an invitation to talk.
+
+- id: lip_own_advice
+  role: body
+  version: 1
+  text: >
+    Before you reply, we would encourage you to speak to your own solicitor. We
+    act for [CLIENT_FULL_NAME] and cannot advise you, so it is important that you
+    have someone advising you on your own position. You can find a family
+    solicitor near you through Resolution or the Law Society, and free initial
+    guidance is available from Citizens Advice.
+
+- id: lip_reply_when_ready
+  role: body
+  version: 1
+  text: >
+    There is no rush. We suggest you reply by [RESPONSE_DEADLINE], which we hope
+    gives you enough time to take advice first. If you need longer, please let us
+    know and we will agree a later date with you.
+
+- id: lip_no_threat_close
+  role: body
+  version: 1
+  text: >
+    If we do not hear from you, our client may need to ask the court to help the
+    two of you resolve matters. We would much rather reach an agreement between
+    you, which is usually quicker and less expensive for both of you.
+
+# --- correspondence to our own client ----------------------------------------
+# Contains advice, so it always takes the reviewed path, and it carries the
+# costs-information duty under the SRA Transparency Rules.
+
+- id: hdr_subject_client
+  role: heading
+  version: 1
+  text: |
+    Dear [CLIENT_SALUTATION]
+
+    Re: your matter -- hearing on [HEARING_DATE]
+
+- id: client_hearing_outcome
+  role: body
+  version: 1
+  text: >
+    I am writing to confirm what happened at the hearing and what happens next. I
+    have set out the orders that were made below, together with the dates you
+    need to keep in mind.
+
+- id: client_next_steps
+  role: body
+  version: 1
+  text: >
+    The next step is for us to prepare the documents the court has asked for. I
+    will send you a list of what I need from you separately, and I would be
+    grateful if you could let me have those items by [RESPONSE_DEADLINE].
+
+- id: client_costs_update
+  role: body
+  version: 1
+  text: >
+    As we agreed at the outset, I will keep you updated on costs. I will send you
+    an updated estimate with my next letter. If at any point you would like a
+    costs position before then, please just ask and I will provide one.
+
+- id: signoff_sincerely
+  role: closing
+  version: 1
+  text: |
+    Yours sincerely
+
+    [FEE_EARNER_NAME]
+    [FEE_EARNER_ROLE]
+    [FIRM_NAME]

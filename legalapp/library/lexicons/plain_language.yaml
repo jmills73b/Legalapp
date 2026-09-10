@@ -1,0 +1,50 @@
+# Terms of art that must be explained when writing to someone without a
+# solicitor. Correct vocabulary is not the same as comprehensible vocabulary,
+# and a letter an unrepresented person cannot follow is a tone problem.
+#
+# A term is treated as explained if the same sentence carries a gloss --
+# a parenthesis, "which is", "which means", "this is", "in other words".
+terms:
+  - Form E
+  - Form A
+  - C100
+  - FM5
+  - MIAM
+  - NCDR
+  - FDA
+  - FDR
+  - First Directions Appointment
+  - Financial Dispute Resolution
+  - financial remedy
+  - conditional order
+  - final order
+  - directions
+  - disclosure
+  - undertaking
+  - penal notice
+  - without prejudice
+  - Cafcass
+  - Scott Schedule
+  - the applicant
+  - the respondent
+  - section 25
+
+# Language that reads as advising the recipient. Writing to an unrepresented
+# person, this is a conduct risk -- we act for the other party and cannot
+# advise them.
+advice_markers:
+  - 'you should\b'
+  - 'you must\b'
+  - 'you are required to\b'
+  - 'you are entitled to\b'
+  - 'you will need to\b'
+  - 'we advise you\b'
+  - 'your best course\b'
+  - 'it is in your interest'
+
+# ...except when the advice is to go and get advice, which is required.
+advice_exemptions:
+  - 'own (?:solicitor|legal advice|adviser)'
+  - 'independent (?:legal )?advice'
+  - 'Citizens Advice'
+  - 'take advice'
