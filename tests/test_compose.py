@@ -16,10 +16,16 @@ def spec(**kw):
 
 
 def test_every_letter_type_composes_and_passes_every_check():
+    # Each type composed with its own defaults: recipient class and the WP
+    # marking are properties of the letter type, not of the caller.
     for lt_id, lt in library.letter_types().items():
-        s = spec(letter_type=lt_id, deadline_days=lt.get("default_deadline_days"))
-        letter = compose(s)
-        assert checks.run_all(letter) == [], f"{lt_id} produced findings"
+        s = LetterSpec(
+            lt_id,
+            RecipientClass(lt["recipient_class"]),
+            deadline_days=lt.get("default_deadline_days"),
+            privileged=lt["wp_marking"] == "required",
+        )
+        assert checks.run_all(compose(s)) == [], f"{lt_id} produced findings"
 
 
 def test_unknown_letter_type_is_rejected():

@@ -16,7 +16,8 @@ CHECK = "tone_lexicon"
 _PERSON_NEAR = r"(?:your client|the (?:father|mother|applicant|respondent)|he|she|they)"
 
 
-def scan(text: str, paragraph_id: str = "letter", to_other_side: bool = True) -> list[Finding]:
+def scan(text: str, paragraph_id: str = "letter", to_other_side: bool = True,
+         children_matter: bool = False) -> list[Finding]:
     lex = _lexicon()
     findings: list[Finding] = []
 
@@ -45,6 +46,21 @@ def scan(text: str, paragraph_id: str = "letter", to_other_side: bool = True) ->
                 suggestion="Describe what happened and leave the characterisation out.",
             )
         )
+
+    for entry in lex.get("child_focus", []):
+        if not children_matter:
+            break
+        for m in re.finditer(entry["pattern"], text, flags=re.I):
+            findings.append(
+                Finding(
+                    check=CHECK,
+                    severity=Severity.ADVISORY,
+                    paragraph_id=paragraph_id,
+                    message=entry["why"],
+                    excerpt=m.group(0),
+                    suggestion=entry["suggestion"],
+                )
+            )
 
     if to_other_side:
         for m in re.finditer(r"[^.!?\n]*\?", text):

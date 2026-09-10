@@ -46,3 +46,20 @@ conduct_adjectives:
   - evasive
   - obstructive
   - unreasonable
+
+# Rights-framing in correspondence about children. The register in this
+# jurisdiction is what arrangements suit the children, not what either parent
+# is owed -- and since 2014 the orders themselves are framed that way.
+child_focus:
+  - pattern: '\b(?:his|her|their|my|our client''s) rights?\b(?![^.]*\bof the child)'
+    why: 'Rights-framing rather than child-focused.'
+    suggestion: 'Describe the arrangement: "the time the children spend with".'
+  - pattern: '\bentitled to (?:see|have|spend time with)\b'
+    why: 'Frames the children as an entitlement of a parent.'
+    suggestion: 'Put it as a proposal about the children''s arrangements.'
+  - pattern: '\bdenied (?:contact|access)\b'
+    why: 'Accusatory and rights-framed.'
+    suggestion: 'Describe what has happened to the arrangements.'
+  - pattern: '\b(?:my|our) client''s (?:contact|time)\b'
+    why: 'Possessive framing of time with the children.'
+    suggestion: '"the time the children spend with our client".'

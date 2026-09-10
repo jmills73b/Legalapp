@@ -223,3 +223,222 @@
     [FEE_EARNER_NAME]
     [FEE_EARNER_ROLE]
     [FIRM_NAME]
+
+# --- client care -------------------------------------------------------------
+# Carries duties under the SRA Codes: what we are doing, who is doing it, what
+# it will cost, and how to complain. Each is its own paragraph so the structure
+# check can require it by name.
+
+- id: hdr_subject_client_care
+  role: heading
+  version: 1
+  text: |
+    Dear [CLIENT_SALUTATION]
+
+    Re: your family matter -- confirming our advice and our terms
+
+- id: cc_scope
+  role: body
+  version: 1
+  text: >
+    Thank you for meeting me. I am writing to confirm what you have asked us to
+    do and what you can expect from us. We have agreed that we will advise you
+    on the matters we discussed and correspond on your behalf. If the work
+    changes, I will write to you again before we go any further.
+
+- id: cc_who_is_handling
+  role: body
+  version: 1
+  text: >
+    I will be handling your matter day to day. My role is [FEE_EARNER_ROLE], and
+    my supervisor is [SUPERVISOR_NAME]. If you cannot reach me and the matter is
+    urgent, please ask for my supervisor.
+
+- id: cc_costs_basis
+  role: body
+  version: 1
+  text: >
+    Our charges are based on the time we spend on your matter, at the rate set
+    out in the enclosed terms of business. I will give you a written estimate for
+    each stage before we begin it, and I will tell you promptly if an estimate
+    needs to change. You will not receive a bill for work you have not been told
+    about first.
+
+- id: cc_complaints
+  role: body
+  version: 1
+  text: >
+    If you are ever unhappy with our service or with a bill, please tell me
+    first, as most concerns can be resolved quickly. If we cannot resolve it, our
+    written complaints procedure is enclosed and explains how to escalate the
+    matter within the firm. You also have the right to complain to the Legal
+    Ombudsman, and the enclosed procedure explains the time limits that apply.
+
+- id: cc_next_step
+  role: body
+  version: 1
+  text: >
+    Please read the enclosed terms of business and let me have a signed copy by
+    [RESPONSE_DEADLINE]. If anything in this letter does not match your
+    understanding of what we agreed, please tell me straight away.
+
+- id: enc_client_care
+  role: enclosure
+  version: 1
+  text: |
+    Enc: Terms of business; complaints procedure
+
+# --- opening correspondence with the other side's solicitors -----------------
+
+- id: hdr_subject_general
+  role: heading
+  version: 1
+  text: |
+    Dear [RECIPIENT_SALUTATION]
+
+    Re: [CLIENT_FULL_NAME] and [OTHER_PARTY_NAME]
+
+- id: fl_confirm_instructed
+  role: body
+  version: 1
+  text: >
+    We understand that you act for [OTHER_PARTY_NAME]. Please confirm that this
+    is so and that you are instructed to accept correspondence, in which case we
+    will write to you rather than to your client from now on.
+
+- id: fl_constructive_opening
+  role: body
+  version: 1
+  text: >
+    Our client would like matters resolved as constructively as possible. We
+    have advised her about the options available, and she is willing to consider
+    any sensible proposal your client wishes to put forward.
+
+# --- non-court dispute resolution --------------------------------------------
+
+- id: ncdr_why_now
+  role: body
+  version: 1
+  text: >
+    Both parties are expected to consider non-court dispute resolution at every
+    stage, and the court will ask what has been considered. We think it is worth
+    the two of them exploring this now, while positions are not yet entrenched
+    and before either party has spent significantly on costs.
+
+- id: ncdr_options
+  role: body
+  version: 1
+  text: >
+    The options that may suit this matter include mediation, negotiation between
+    solicitors, a collaborative process, arbitration, or a private financial
+    dispute resolution appointment. Our client has no fixed view about which is
+    best and is willing to discuss any of them.
+
+- id: ncdr_proposal_next
+  role: body
+  version: 1
+  text: >
+    We propose that both parties agree an approach in principle, and that we then
+    put forward two or three names between us. Our client will meet her share of
+    the cost of whichever route is agreed.
+
+- id: fm5_purpose
+  role: body
+  version: 1
+  text: >
+    Each party is required to set out their views on using non-court dispute
+    resolution in advance of the hearing. We write so that our respective clients
+    can file consistent information and so that neither is taken by surprise.
+
+- id: fm5_our_position
+  role: body
+  version: 1
+  text: >
+    Our client's position is that non-court dispute resolution remains suitable
+    in this matter and that she is willing to engage in it. We will record that
+    view, together with any steps already taken.
+
+- id: fm5_invite_position
+  role: body
+  version: 1
+  text: >
+    Please let us have your client's position so that we can each complete our
+    forms accurately. If your client takes a different view, it would be helpful
+    to understand why, in case there is something we can address between us.
+
+# --- children ----------------------------------------------------------------
+
+- id: ca_current_position
+  role: body
+  version: 1
+  text: >
+    We understand the arrangements for the children have been difficult to settle
+    since the separation. Our client would like to agree something workable that
+    the children can rely on, rather than have arrangements decided for them.
+
+- id: ca_proposal
+  role: body
+  version: 1
+  text: >
+    Our client proposes the arrangements set out below. She has tried to build
+    them around the children's school week and their activities rather than
+    around what is convenient for either parent, and she is open to adjusting
+    them if your client sees a difficulty we have missed.
+
+- id: ca_open_to_discussion
+  role: body
+  version: 1
+  text: >
+    This proposal is made in an effort to reach agreement and is not intended as
+    a final position. If your client would like to suggest an alternative
+    pattern, we will put it to our client constructively.
+
+# --- enclosing an order ------------------------------------------------------
+
+- id: hdr_subject_order
+  role: heading
+  version: 1
+  text: |
+    Dear [CLIENT_SALUTATION]
+
+    Re: your matter -- the order made on [HEARING_DATE]
+
+- id: ord_enclosing
+  role: body
+  version: 1
+  text: >
+    I enclose a sealed copy of the order. Please keep it somewhere safe, as you
+    may need to produce it later. I have set out below what it means in practice,
+    but please do read the order itself as well.
+
+- id: ord_effect_explained
+  role: body
+  version: 1
+  text: >
+    In summary, the order records what has been agreed or decided and sets out
+    the dates by which each of you must do something. Where the order says a step
+    must be taken by a particular date, that date is binding and the court
+    expects it to be met.
+
+- id: ord_what_you_must_do
+  role: body
+  version: 1
+  text: >
+    The steps that fall to you are listed below with their dates. If you think
+    you may not be able to meet one of them, please tell me as soon as you can,
+    because it is usually possible to agree an extension in advance and much
+    harder to explain a missed date afterwards.
+
+- id: ord_ask_questions
+  role: body
+  version: 1
+  text: >
+    Please do not worry if any of this is unclear. Orders are written for the
+    court rather than for the people they affect, and it is completely normal to
+    need it explained. Telephone me and I will go through it with you.
+
+- id: enc_sealed_order
+  role: enclosure
+  version: 1
+  text: |
+    Enc: Sealed order

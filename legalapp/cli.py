@@ -61,7 +61,8 @@ def cmd_draft(args) -> int:
     spec = LetterSpec(
         letter_type=args.letter_type,
         recipient_class=RecipientClass(args.to or lt["recipient_class"]),
-        privileged=args.wp,
+        # A letter type that requires the marking gets it without being asked.
+        privileged=args.wp or lt["wp_marking"] == "required",
         intent=args.note or "",
         deadline_days=args.deadline if args.deadline is not None else lt.get("default_deadline_days"),
         suppress_address=args.suppress_address,

@@ -24,7 +24,7 @@ interface contract, and build order.
 | Tone lexicon (deterministic half) | done |
 | Structure checks — WP marking, address suppression, enclosures | done |
 | Register checks — salutation/sign-off, deadline floor, plain language, advice to a litigant in person | done |
-| Paragraph library + composer + local merge | done, for 4 letter types |
+| Paragraph library + composer + local merge | done, full 10-letter catalogue |
 | Client vs outbound review split | done |
 | Intake and review agents | written against the Claude API, not yet exercised live |
 
@@ -32,10 +32,16 @@ interface contract, and build order.
 
 | Type | To | Notes |
 | --- | --- | --- |
+| `client_care_letter` | client | costs, supervision and complaints paragraphs enforced |
+| `first_letter_unrepresented` | litigant in person | plain-language and no-advice checks; 21-day deadline floor |
+| `first_letter_solicitors` | other side's solicitors | |
+| `ncdr_proposal` | other side's solicitors | |
 | `voluntary_disclosure_request` | other side's solicitors | |
 | `form_e_chaser` | other side's solicitors | |
-| `first_letter_unrepresented` | litigant in person | plain-language and no-advice checks; 21-day deadline floor |
+| `child_arrangements_proposal` | other side's solicitors | Without Prejudice enforced; child-focus checks |
 | `client_hearing_report` | client | contains advice; costs-information paragraph required |
+| `order_enclosure_to_client` | client | plain language; enclosure enforced |
+| `ncdr_position_fm5` | other side's solicitors | |
 
 `legalapp check` runs over any letter you already have — no drafting required.
 

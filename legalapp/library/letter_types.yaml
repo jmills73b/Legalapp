@@ -85,3 +85,141 @@
   required_paragraphs: [hdr_refs, hdr_subject_client, client_costs_update, signoff_sincerely]
   enclosures: []
   bespoke_slot: "What the court actually ordered, and what it means for the client."
+
+- id: client_care_letter
+  name: Client care and terms of business
+  recipient_class: client
+  contains_advice: true
+  wp_marking: forbidden
+  requires_deadline: true
+  default_deadline_days: 14
+  salutation_style: named
+  plain_language: true           # our own client is a lay reader too
+  costs_information: true
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_client_care
+    - cc_scope
+    - cc_who_is_handling
+    - cc_costs_basis
+    - cc_complaints
+    - cc_next_step
+    - signoff_sincerely
+    - enc_client_care
+  required_paragraphs:
+    - hdr_refs
+    - hdr_subject_client_care
+    - cc_who_is_handling      # who is acting and who supervises
+    - cc_costs_basis          # costs information duty
+    - cc_complaints           # complaints procedure and the Legal Ombudsman
+    - signoff_sincerely
+  enclosures: ["Terms of business", "Complaints procedure"]
+  bespoke_slot: "The specific scope agreed at the first meeting."
+
+- id: first_letter_solicitors
+  name: First letter to the other side's solicitors
+  recipient_class: other_side_solicitors
+  contains_advice: false
+  wp_marking: forbidden
+  requires_deadline: true
+  default_deadline_days: 14
+  salutation_style: formal
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_general
+    - intro_acting
+    - fl_confirm_instructed
+    - fl_constructive_opening
+    - ncdr_invitation
+    - req_reply_by_reasoned
+    - signoff_faithfully
+  required_paragraphs: [hdr_refs, hdr_subject_general, fl_confirm_instructed, signoff_faithfully]
+  enclosures: []
+  bespoke_slot: "A short, neutral summary of our client's position."
+
+- id: ncdr_proposal
+  name: Proposal to engage in non-court dispute resolution
+  recipient_class: other_side_solicitors
+  contains_advice: false
+  wp_marking: optional
+  requires_deadline: true
+  default_deadline_days: 21
+  salutation_style: formal
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_general
+    - intro_acting
+    - ncdr_why_now
+    - ncdr_options
+    - ncdr_proposal_next
+    - req_reply_by_reasoned
+    - offer_call
+    - signoff_faithfully
+  required_paragraphs: [hdr_refs, hdr_subject_general, ncdr_options, signoff_faithfully]
+  enclosures: []
+  bespoke_slot: "Why a particular route suits this matter."
+
+- id: child_arrangements_proposal
+  name: Child arrangements proposal (Without Prejudice)
+  recipient_class: other_side_solicitors
+  contains_advice: false
+  wp_marking: required          # a negotiating position, not an open letter
+  requires_deadline: true
+  default_deadline_days: 21
+  salutation_style: formal
+  children_matter: true         # rights-framing checks apply
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_children
+    - intro_acting
+    - ca_current_position
+    - ca_proposal
+    - ca_open_to_discussion
+    - req_reply_by_reasoned
+    - offer_call
+    - signoff_faithfully
+  required_paragraphs: [hdr_refs, hdr_subject_children, ca_proposal, signoff_faithfully]
+  enclosures: []
+  bespoke_slot: "The proposed pattern itself, built around the children's week."
+
+- id: order_enclosure_to_client
+  name: Letter to client enclosing an order and explaining its effect
+  recipient_class: client
+  contains_advice: true
+  wp_marking: forbidden
+  requires_deadline: false
+  salutation_style: named
+  plain_language: true
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_order
+    - ord_enclosing
+    - ord_effect_explained
+    - ord_what_you_must_do
+    - ord_ask_questions
+    - signoff_sincerely
+    - enc_sealed_order
+  required_paragraphs: [hdr_refs, hdr_subject_order, ord_what_you_must_do, signoff_sincerely]
+  enclosures: ["Sealed order"]
+  bespoke_slot: "What this particular order says, in plain words."
+
+- id: ncdr_position_fm5
+  name: Non-court dispute resolution position (FM5)
+  recipient_class: other_side_solicitors
+  contains_advice: false
+  wp_marking: forbidden         # positions are filed, so this is open correspondence
+  requires_deadline: true
+  default_deadline_days: 7
+  salutation_style: formal
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_general
+    - intro_acting
+    - fm5_purpose
+    - fm5_our_position
+    - fm5_invite_position
+    - req_reply_by_reasoned
+    - signoff_faithfully
+  required_paragraphs: [hdr_refs, hdr_subject_general, fm5_our_position, signoff_faithfully]
+  enclosures: []
+  bespoke_slot: "Any steps already taken towards non-court dispute resolution."

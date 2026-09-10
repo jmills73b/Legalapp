@@ -57,6 +57,7 @@ _DEFS: list[TokenDef] = [
     ),
     TokenDef("FEE_EARNER_NAME", TokenType.PERSON, "Fee earner signing the letter"),
     TokenDef("FEE_EARNER_ROLE", TokenType.TEXT, "Their role, e.g. 'Senior Associate'"),
+    TokenDef("SUPERVISOR_NAME", TokenType.PERSON, "The supervising solicitor", required=False),
     TokenDef("FIRM_NAME", TokenType.TEXT, "Our firm"),
     TokenDef(
         "FIRM_ADDRESS_BLOCK",

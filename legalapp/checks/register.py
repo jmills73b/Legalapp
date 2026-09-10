@@ -57,7 +57,11 @@ def deadline_floor(letter) -> list[Finding]:
 
 
 def plain_language(text: str, paragraph_id: str) -> list[Finding]:
-    """Terms of art used to an unrepresented recipient without a gloss."""
+    """Terms of art used to a lay reader without a gloss.
+
+    Applies to our own client as much as to a litigant in person -- correct
+    vocabulary is not the same thing as comprehensible vocabulary.
+    """
     out: list[Finding] = []
     for term in _lexicon()["terms"]:
         for m in re.finditer(rf"\b{re.escape(term)}\b", text, flags=re.I):
@@ -65,7 +69,7 @@ def plain_language(text: str, paragraph_id: str) -> list[Finding]:
                 continue
             out.append(Finding(
                 CHECK, Severity.ADVISORY, paragraph_id,
-                f"{term!r} is a term of art and the recipient has no solicitor to explain it.",
+                f"{term!r} is a term of art and the reader is not a lawyer.",
                 excerpt=term,
                 suggestion="Explain it in the same sentence, or use plain words.",
             ))
@@ -107,8 +111,17 @@ def _sentence_around(text: str, index: int) -> str:
 def scan(letter) -> list[Finding]:
     lt = library.letter_types()[letter.spec.letter_type]
     out = salutation_signoff(letter) + deadline_floor(letter)
-    if letter.spec.recipient_class.unrepresented or lt.get("plain_language"):
-        for p in letter.paragraphs:
+
+    # Two different triggers. A lay reader needs plain language whether or not
+    # they are the other side -- our own client is a lay reader too. But the
+    # advice check only applies to someone we do not act for: advising our own
+    # client is the entire point of a client letter.
+    lay_reader = lt.get("plain_language") or letter.spec.recipient_class.unrepresented
+    unrepresented = letter.spec.recipient_class.unrepresented
+
+    for p in letter.paragraphs:
+        if lay_reader:
             out += plain_language(p.text, p.id)
+        if unrepresented:
             out += advice_to_unrepresented(p.text, p.id)
     return out
