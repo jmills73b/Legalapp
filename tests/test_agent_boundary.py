@@ -37,3 +37,27 @@ def test_recipient_class_drives_the_review_path():
     assert RecipientClass.CLIENT.is_outbound is False
     assert RecipientClass.OTHER_SIDE_SOLICITORS.is_outbound is True
     assert RecipientClass.LITIGANT_IN_PERSON.unrepresented is True
+
+
+def test_availability_requires_an_actual_credential(monkeypatch):
+    # The SDK constructs with no credential and only fails at request time, so
+    # available() must check for one rather than trusting the constructor.
+    from legalapp.agents import client as agent_client
+
+    agent_client.get_client.cache_clear()
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
+    assert agent_client.available() is False
+    with pytest.raises(agent_client.AgentUnavailable) as e:
+        agent_client.get_client()
+    assert "ANTHROPIC_API_KEY" in str(e.value)
+    agent_client.get_client.cache_clear()
+
+
+def test_availability_is_true_with_a_key(monkeypatch):
+    from legalapp.agents import client as agent_client
+
+    agent_client.get_client.cache_clear()
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test-key")
+    assert agent_client.available() is True
+    agent_client.get_client.cache_clear()

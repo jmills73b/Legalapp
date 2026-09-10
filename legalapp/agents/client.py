@@ -32,9 +32,17 @@ def get_client():
             "the anthropic SDK is not installed -- pip install 'legalapp[agents]'"
         ) from e
     try:
-        return anthropic.Anthropic()
+        client = anthropic.Anthropic()
     except Exception as e:  # pragma: no cover - environment dependent
-        raise AgentUnavailable(f"no Claude credentials available: {e}") from e
+        raise AgentUnavailable(f"could not construct a Claude client: {e}") from e
+    # The SDK constructs happily with no credential and only fails at request
+    # time, so check here rather than discovering it mid-draft.
+    if not (client.api_key or getattr(client, "auth_token", None)):
+        raise AgentUnavailable(
+            "no Claude credentials found. Set ANTHROPIC_API_KEY, or run `ant auth login`. "
+            "The deterministic checks and the composer need no credential."
+        )
+    return client
 
 
 def available() -> bool:
