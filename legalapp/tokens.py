@@ -67,6 +67,7 @@ _DEFS: list[TokenDef] = [
     ),
     TokenDef("RECIPIENT_SALUTATION", TokenType.TEXT, "Salutation, e.g. 'Dear Sirs'"),
     TokenDef("DISCLOSURE_DUE_DATE", TokenType.DATE, "Date disclosure fell due", required=False),
+    TokenDef("PREVIOUS_LETTER_DATE", TokenType.DATE, "Date of our previous letter", required=False),
 ]
 
 DICTIONARY: dict[str, TokenDef] = {d.id: d for d in _DEFS}

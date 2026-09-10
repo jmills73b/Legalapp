@@ -10,6 +10,8 @@ $ legalapp letter form-e-chaser --deadline 14d
 $ legalapp draft form_e_chaser --deadline 14
 $ legalapp merge drafts/form_e_chaser.txt --values values.json
 $ legalapp check some_existing_letter.txt
+$ legalapp options child_arrangements_proposal   # what you can add
+$ legalapp draft child_arrangements_proposal --include ca_school_week,ca_holidays
 $ legalapp draft client_care_letter --docx
 ```
 
@@ -32,7 +34,8 @@ interface contract, and build order.
 | Structure checks — WP marking, address suppression, enclosures | done |
 | DOCX output on the firm's house style | done — `--docx` on `draft` and `merge` |
 | Register checks — salutation/sign-off, deadline floor, plain language, advice to a litigant in person | done |
-| Paragraph library + composer + local merge | done, full 10-letter catalogue |
+| Paragraph library + composer + local merge | done, 10 letter types, 86 paragraphs |
+| Optional-paragraph menus | done, 43 across the catalogue — pick the middle of the letter rather than write it |
 | Client vs outbound review split | done |
 | Intake and review agents | written against the Claude API, not yet exercised live |
 

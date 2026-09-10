@@ -50,6 +50,24 @@ def cmd_tokens(args) -> int:
     return 0
 
 
+def cmd_options(args) -> int:
+    types = library.letter_types()
+    if args.letter_type not in types:
+        print(f"unknown letter type {args.letter_type!r}", file=sys.stderr)
+        return 2
+    lt = types[args.letter_type]
+    menu = lt.get("optional", [])
+    print(f"  {lt['name']}")
+    if not menu:
+        print("  no optional paragraphs yet")
+        return 0
+    print(f"\n  optional paragraphs -- add with --include\n")
+    for entry in menu:
+        swap = f"  (replaces {entry['replaces']})" if entry.get("replaces") else ""
+        print(f"  {entry['id']:<30} {entry['label']}{swap}")
+    return 0
+
+
 def cmd_draft(args) -> int:
     types = library.letter_types()
     if args.letter_type not in types:
@@ -66,8 +84,9 @@ def cmd_draft(args) -> int:
         intent=args.note or "",
         deadline_days=args.deadline if args.deadline is not None else lt.get("default_deadline_days"),
         suppress_address=args.suppress_address,
+        include=[i.strip() for i in (args.include or "").split(",") if i.strip()],
     )
-    letter = compose(spec)
+    letter = compose(spec, include=spec.include)
     findings = checks.run_all(letter)
 
     outdir = pathlib.Path(args.out)
@@ -159,9 +178,15 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("--wp", action="store_true", help="mark Without Prejudice")
     d.add_argument("--suppress-address", action="store_true",
                    help="address confidentiality applies to this matter")
+    d.add_argument("--include", help="comma-separated optional paragraph ids "
+                                    "(see `legalapp options <type>`)")
     d.add_argument("--docx", action="store_true", help="also write a .docx on the house style")
     d.add_argument("--out", default="drafts")
     d.set_defaults(fn=cmd_draft)
+
+    o = sub.add_parser("options", help="optional paragraphs available for a letter type")
+    o.add_argument("letter_type")
+    o.set_defaults(fn=cmd_options)
 
     c = sub.add_parser("check", help="run the deterministic checks over any letter")
     c.add_argument("file")

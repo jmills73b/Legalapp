@@ -48,7 +48,57 @@ class Letter:
         raise KeyError(pid)
 
 
-def compose(spec: LetterSpec, bespoke: dict[str, str] | None = None) -> Letter:
+def optional_paragraphs(letter_type: str) -> list[dict]:
+    """The menu of paragraphs a fee earner may add to this letter type."""
+    return library.letter_types()[letter_type].get("optional", [])
+
+
+def _apply_optional(letter: Letter, lt: dict, include: list[str], paras: dict) -> None:
+    """Insert or swap chosen optional paragraphs.
+
+    An entry with `replaces` swaps a core paragraph out -- that is how a second
+    chase replaces a first one rather than sitting awkwardly beside it. An entry
+    with `after` is inserted following the paragraph it names.
+    """
+    menu = {entry["id"]: entry for entry in lt.get("optional", [])}
+    unknown = [i for i in include if i not in menu]
+    if unknown:
+        raise KeyError(
+            f"{unknown} not available for {lt['id']}; try `legalapp options {lt['id']}`"
+        )
+    # Two paragraphs that replace the same core paragraph are alternatives, not
+    # additions -- a second chase and a final chase cannot both be the letter.
+    claimed: dict[str, str] = {}
+    for pid in include:
+        target = menu[pid].get("replaces")
+        if target and target in claimed:
+            raise ValueError(
+                f"{pid!r} and {claimed[target]!r} are alternatives -- both replace "
+                f"{target!r}. Choose one."
+            )
+        if target:
+            claimed[target] = pid
+    for pid in include:
+        entry = menu[pid]
+        p = paras[pid]
+        block = Paragraph(pid, p["text"], p["role"], f"library:{pid}@{p['version']}")
+        replaces = entry.get("replaces")
+        if replaces and letter.paragraph(replaces) is not None:
+            idx = next(i for i, x in enumerate(letter.paragraphs) if x.id == replaces)
+            letter.paragraphs[idx] = block
+            continue
+        anchor = entry.get("after")
+        if anchor and letter.paragraph(anchor) is not None:
+            idx = next(i for i, x in enumerate(letter.paragraphs) if x.id == anchor)
+            letter.paragraphs.insert(idx + 1, block)
+        else:
+            closing = next((i for i, x in enumerate(letter.paragraphs)
+                            if x.role in ("closing", "enclosure")), len(letter.paragraphs))
+            letter.paragraphs.insert(closing, block)
+
+
+def compose(spec: LetterSpec, bespoke: dict[str, str] | None = None,
+            include: list[str] | None = None) -> Letter:
     types, paras = library.letter_types(), library.paragraphs()
     if spec.letter_type not in types:
         raise KeyError(f"unknown letter type {spec.letter_type!r}; try `legalapp letters`")
@@ -65,6 +115,9 @@ def compose(spec: LetterSpec, bespoke: dict[str, str] | None = None) -> Letter:
         if pid == "hdr_refs" and spec.suppress_address:
             text = text.replace("[FIRM_ADDRESS_BLOCK]\n", "")
         letter.paragraphs.append(Paragraph(pid, text, p["role"], f"library:{pid}@{p['version']}"))
+
+    if include:
+        _apply_optional(letter, lt, include, paras)
 
     for pid, text in (bespoke or {}).items():
         letter.paragraphs.append(Paragraph(pid, text, "body", "generated"))

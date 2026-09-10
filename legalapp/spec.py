@@ -37,6 +37,7 @@ class LetterSpec:
     intent: str = ""                   # the fee earner's line of instruction
     deadline_days: int | None = None
     suppress_address: bool = False     # client's address withheld -- safeguarding
+    include: list[str] = field(default_factory=list)   # optional paragraphs chosen
     notes: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:

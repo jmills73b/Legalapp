@@ -21,6 +21,25 @@
   required_paragraphs: [hdr_refs, hdr_subject_financial, signoff_faithfully]
   enclosures: ["Form E of [CLIENT_FULL_NAME]"]
   bespoke_slot: "Any specifics of what remains outstanding, inserted after the disclosure paragraph."
+  optional:
+    - id: fin_second_chase
+      label: "Second chase -- refers back to the earlier letter"
+      replaces: fin_form_e_outstanding
+    - id: fin_final_before_application
+      label: "Final chase before an application"
+      replaces: fin_form_e_outstanding
+    - id: fin_partial_disclosure
+      label: "Some documents received, others outstanding"
+      after: fin_form_e_outstanding
+    - id: fin_offer_extension
+      label: "Offer to agree more time"
+      after: req_reply_by_reasoned
+    - id: fin_costs_reserved
+      label: "Reserve the costs position (use sparingly)"
+      after: next_step_directions_neutral
+    - id: fin_questionnaire_note
+      label: "Note that questions will follow, kept proportionate"
+      after: fin_form_e_outstanding
 
 - id: voluntary_disclosure_request
   name: Voluntary financial disclosure request
@@ -42,6 +61,19 @@
   required_paragraphs: [hdr_refs, hdr_subject_financial, signoff_faithfully]
   enclosures: []
   bespoke_slot: "Any matter-specific framing of why voluntary exchange suits this case."
+  optional:
+    - id: fin_offer_extension
+      label: "Offer to agree more time"
+      after: req_reply_by_reasoned
+    - id: ncdr_mediation_detail
+      label: "Explain mediation specifically"
+      after: ncdr_invitation
+    - id: fin_questionnaire_note
+      label: "Note that questions will follow"
+      after: fin_disclosure_scope
+    - id: scope_financial_only
+      label: "Say the matter is financial only"
+      after: intro_acting
 
 - id: first_letter_unrepresented
   name: First letter to an unrepresented other party
@@ -65,6 +97,19 @@
   required_paragraphs: [hdr_refs, hdr_subject_lip, lip_own_advice, signoff_sincerely]
   enclosures: []
   bespoke_slot: "What our client proposes, in plain language, with no terms of art."
+  optional:
+    - id: lip_children_context
+      label: "The matter concerns the children"
+      after: lip_purpose
+    - id: lip_financial_context
+      label: "The matter concerns finances"
+      after: lip_purpose
+    - id: lip_what_happens_next
+      label: "You can reply yourself or pass this to a solicitor"
+      after: lip_own_advice
+    - id: lip_no_reply_needed_today
+      label: "Nothing needs deciding today"
+      after: lip_reply_when_ready
 
 - id: client_hearing_report
   name: Report to client on a hearing, with next steps
@@ -85,6 +130,16 @@
   required_paragraphs: [hdr_refs, hdr_subject_client, client_costs_update, signoff_sincerely]
   enclosures: []
   bespoke_slot: "What the court actually ordered, and what it means for the client."
+  optional:
+    - id: client_what_i_need
+      label: "List what I need from the client"
+      after: client_next_steps
+    - id: client_costs_estimate_update
+      label: "Costs estimate for the next stage"
+      after: client_costs_update
+    - id: client_reassurance
+      label: "Acknowledge that this stage feels slow"
+      after: client_costs_update
 
 - id: client_care_letter
   name: Client care and terms of business
@@ -115,6 +170,16 @@
     - signoff_sincerely
   enclosures: ["Terms of business", "Complaints procedure"]
   bespoke_slot: "The specific scope agreed at the first meeting."
+  optional:
+    - id: cc_funding_private
+      label: "Privately funded"
+      after: cc_costs_basis
+    - id: cc_funding_fixed_fee
+      label: "Fixed fee agreed"
+      after: cc_costs_basis
+    - id: cc_data_protection
+      label: "Data protection and privacy notice"
+      after: cc_complaints
 
 - id: first_letter_solicitors
   name: First letter to the other side's solicitors
@@ -136,6 +201,22 @@
   required_paragraphs: [hdr_refs, hdr_subject_general, fl_confirm_instructed, signoff_faithfully]
   enclosures: []
   bespoke_slot: "A short, neutral summary of our client's position."
+  optional:
+    - id: scope_children_only
+      label: "Children only"
+      after: fl_confirm_instructed
+    - id: scope_financial_only
+      label: "Financial only"
+      after: fl_confirm_instructed
+    - id: scope_both
+      label: "Both children and finances"
+      after: fl_confirm_instructed
+    - id: fl_no_proceedings_yet
+      label: "Confirm no proceedings issued and none wanted"
+      after: fl_constructive_opening
+    - id: fl_urgency_note
+      label: "Explain why we have written now"
+      after: fl_constructive_opening
 
 - id: ncdr_proposal
   name: Proposal to engage in non-court dispute resolution
@@ -158,6 +239,22 @@
   required_paragraphs: [hdr_refs, hdr_subject_general, ncdr_options, signoff_faithfully]
   enclosures: []
   bespoke_slot: "Why a particular route suits this matter."
+  optional:
+    - id: ncdr_mediation_detail
+      label: "Mediation -- explained"
+      after: ncdr_options
+    - id: ncdr_private_fdr_detail
+      label: "Private FDR -- explained"
+      after: ncdr_options
+    - id: ncdr_arbitration_detail
+      label: "Arbitration -- explained"
+      after: ncdr_options
+    - id: ncdr_solicitor_negotiation
+      label: "Narrow the issues in correspondence first"
+      after: ncdr_options
+    - id: ncdr_previously_attempted
+      label: "An earlier attempt did not succeed"
+      after: ncdr_why_now
 
 - id: child_arrangements_proposal
   name: Child arrangements proposal (Without Prejudice)
@@ -181,6 +278,28 @@
   required_paragraphs: [hdr_refs, hdr_subject_children, ca_proposal, signoff_faithfully]
   enclosures: []
   bespoke_slot: "The proposed pattern itself, built around the children's week."
+  optional:
+    - id: ca_school_week
+      label: "Term-time pattern"
+      after: ca_proposal
+    - id: ca_holidays
+      label: "School holidays"
+      after: ca_proposal
+    - id: ca_handovers
+      label: "Handovers at school"
+      after: ca_proposal
+    - id: ca_special_occasions
+      label: "Birthdays and Christmas"
+      after: ca_proposal
+    - id: ca_build_up
+      label: "Build the time up in stages"
+      after: ca_proposal
+    - id: ca_interim_only
+      label: "Interim arrangement only"
+      after: ca_open_to_discussion
+    - id: ca_children_views
+      label: "The children are old enough to have a view"
+      after: ca_open_to_discussion
 
 - id: order_enclosure_to_client
   name: Letter to client enclosing an order and explaining its effect
@@ -202,6 +321,16 @@
   required_paragraphs: [hdr_refs, hdr_subject_order, ord_what_you_must_do, signoff_sincerely]
   enclosures: ["Sealed order"]
   bespoke_slot: "What this particular order says, in plain words."
+  optional:
+    - id: ord_consent_note
+      label: "The order records what was agreed, not imposed"
+      after: ord_effect_explained
+    - id: ord_deadline_list
+      label: "List the dates and how to treat weekends"
+      after: ord_what_you_must_do
+    - id: client_reassurance
+      label: "Acknowledge that this stage feels slow"
+      after: ord_ask_questions
 
 - id: ncdr_position_fm5
   name: Non-court dispute resolution position (FM5)
@@ -223,3 +352,13 @@
   required_paragraphs: [hdr_refs, hdr_subject_general, fm5_our_position, signoff_faithfully]
   enclosures: []
   bespoke_slot: "Any steps already taken towards non-court dispute resolution."
+  optional:
+    - id: ncdr_previously_attempted
+      label: "An earlier attempt did not succeed"
+      after: fm5_our_position
+    - id: ncdr_exemption_note
+      label: "Ask which exemption is relied on"
+      after: fm5_invite_position
+    - id: ncdr_private_fdr_detail
+      label: "Offer a private FDR"
+      after: fm5_our_position

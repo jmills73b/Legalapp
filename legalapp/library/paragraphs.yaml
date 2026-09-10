@@ -442,3 +442,315 @@
   version: 1
   text: |
     Enc: Sealed order
+
+# =============================================================================
+# Optional paragraphs. These are what a fee earner picks from instead of
+# writing the middle of the letter from scratch.
+# =============================================================================
+
+# --- chasing disclosure: escalation ------------------------------------------
+
+- id: fin_second_chase
+  role: body
+  version: 1
+  text: >
+    We wrote to you on [PREVIOUS_LETTER_DATE] about your client's outstanding
+    Form E and have not had a reply. We appreciate that things are missed, so we
+    are writing again before taking any other step.
+
+- id: fin_final_before_application
+  role: body
+  version: 1
+  text: >
+    We have now written twice about your client's outstanding Form E, most
+    recently on [PREVIOUS_LETTER_DATE], without a substantive reply. We would
+    still prefer to resolve this between us, but we must tell you that our
+    client cannot let the timetable slip further.
+
+- id: fin_partial_disclosure
+  role: body
+  version: 1
+  text: >
+    We acknowledge the documents your client has provided. The items still
+    outstanding are listed below. If any of them do not exist or are not
+    available, please say so and we will not press for them.
+
+- id: fin_costs_reserved
+  role: body
+  version: 1
+  text: >
+    We do not raise costs lightly, and our client's wish is to resolve matters
+    without any costs argument. We should record, however, that if an
+    application becomes necessary solely because disclosure was not provided,
+    our client reserves her position on the costs of that application.
+
+- id: fin_offer_extension
+  role: body
+  version: 1
+  text: >
+    If your client needs more time, we would rather agree it now than have the
+    date pass. Please tell us what is realistic and we will take instructions
+    on a revised date.
+
+- id: fin_questionnaire_note
+  role: body
+  version: 1
+  text: >
+    Once we have your client's Form E we will raise any questions arising from
+    it in the usual way. We will keep those questions proportionate to the
+    issues actually in dispute.
+
+# --- opening correspondence: what the matter is about ------------------------
+
+- id: scope_children_only
+  role: body
+  version: 1
+  text: >
+    This matter concerns the arrangements for the children only. Our client is
+    not asking us to raise financial matters at this stage, and would prefer the
+    two issues be kept separate so that neither delays the other.
+
+- id: scope_financial_only
+  role: body
+  version: 1
+  text: >
+    This matter concerns the financial arrangements only. We understand the
+    arrangements for the children are working, and our client does not wish to
+    reopen them.
+
+- id: scope_both
+  role: body
+  version: 1
+  text: >
+    There are two matters to resolve: the arrangements for the children and the
+    financial arrangements. Our client would like to deal with the children
+    first, as those arrangements affect the family day to day.
+
+- id: fl_no_proceedings_yet
+  role: body
+  version: 1
+  text: >
+    No proceedings have been issued and our client does not want to issue if it
+    can be avoided. This letter is intended to open a conversation rather than
+    to set a deadline for its own sake.
+
+- id: fl_urgency_note
+  role: body
+  version: 1
+  text: >
+    We should explain why we have written now rather than later. There is a
+    practical deadline approaching that affects both parties, and our client
+    would rather address it jointly than have it resolved for them.
+
+# --- non-court dispute resolution: the specific route ------------------------
+
+- id: ncdr_mediation_detail
+  role: body
+  version: 1
+  text: >
+    Our client's preference is mediation. A mediator does not take sides or
+    impose a decision; they help the parties reach their own agreement, and
+    anything agreed can then be recorded properly. Our client is willing to
+    attend an initial meeting and to meet her share of the cost.
+
+- id: ncdr_private_fdr_detail
+  role: body
+  version: 1
+  text: >
+    Our client would be willing to fund her share of a private financial dispute
+    resolution appointment. It is usually quicker to arrange than a court date
+    and gives both parties an experienced view of the likely outcome, which is
+    often what unlocks a settlement.
+
+- id: ncdr_arbitration_detail
+  role: body
+  version: 1
+  text: >
+    If the parties cannot agree, arbitration is worth considering. It produces a
+    binding decision, on a timetable the parties control rather than the court's,
+    and it keeps the matter private.
+
+- id: ncdr_solicitor_negotiation
+  role: body
+  version: 1
+  text: >
+    If neither party wants a third party involved at this stage, we are content
+    to try to narrow the issues in correspondence first. We suggest we exchange
+    positions on the two or three points that actually divide the parties rather
+    than restating everything.
+
+- id: ncdr_previously_attempted
+  role: body
+  version: 1
+  text: >
+    We recognise that an attempt has already been made and did not succeed. Our
+    client's view is that the position has moved since then and that a further
+    attempt is worthwhile. If your client disagrees, it would help to know why.
+
+- id: ncdr_exemption_note
+  role: body
+  version: 1
+  text: >
+    We understand your client may say an exemption applies. If that is right,
+    please tell us which one, so that we can advise our client properly rather
+    than assume a refusal to engage.
+
+# --- children: the shape of the proposal -------------------------------------
+
+- id: ca_school_week
+  role: body
+  version: 1
+  text: >
+    During term time our client proposes the pattern set out below. It is built
+    around the school run and the children's usual activities, so that neither
+    child has to give anything up because of the arrangement.
+
+- id: ca_holidays
+  role: body
+  version: 1
+  text: >
+    For school holidays, our client proposes that the time is divided broadly
+    equally, with dates agreed a term in advance so that both parents can book
+    time off and neither is left arranging things at short notice.
+
+- id: ca_handovers
+  role: body
+  version: 1
+  text: >
+    On handovers, our client suggests they take place at school wherever the
+    timing allows, so that the children move from one parent to the other
+    without a doorstep exchange.
+
+- id: ca_special_occasions
+  role: body
+  version: 1
+  text: >
+    For birthdays, Christmas and other occasions that matter to this family, our
+    client proposes the parties alternate year to year and confirm the coming
+    year's arrangements each September.
+
+- id: ca_interim_only
+  role: body
+  version: 1
+  text: >
+    Our client puts this forward as an interim arrangement only, to give the
+    children something settled while the longer-term position is worked out. She
+    does not intend it to fix the position permanently.
+
+- id: ca_build_up
+  role: body
+  version: 1
+  text: >
+    Our client suggests the time builds up in stages rather than changing all at
+    once, so that the children adjust at their own pace and both parents can see
+    how each stage is working before the next.
+
+- id: ca_children_views
+  role: body
+  version: 1
+  text: >
+    The children are old enough to have a view, and our client's instinct is
+    that any arrangement is more likely to hold if it takes account of what they
+    would prefer. She is not suggesting they be asked to choose between their
+    parents.
+
+# --- unrepresented recipient: additions in the same plain register -----------
+
+- id: lip_children_context
+  role: body
+  version: 1
+  text: >
+    Our client would like to agree the arrangements for the children with you.
+    She is not asking a court to decide anything at the moment, and she would
+    prefer the two of you settled it between you.
+
+- id: lip_financial_context
+  role: body
+  version: 1
+  text: >
+    Our client would like to sort out the financial side. That normally starts
+    with both of you setting out what you have, so that any discussion is based
+    on the same information.
+
+- id: lip_what_happens_next
+  role: body
+  version: 1
+  text: >
+    If you would like to reply yourself, you can. If you would prefer a
+    solicitor to reply for you, please give them this letter and ask them to
+    contact us. Either is fine.
+
+- id: lip_no_reply_needed_today
+  role: body
+  version: 1
+  text: >
+    You do not need to decide anything today. If it is easier, you can simply
+    reply to say you have received this letter and that you are taking advice.
+
+# --- client letters ----------------------------------------------------------
+
+- id: cc_funding_private
+  role: body
+  version: 1
+  text: >
+    You are funding this matter privately. That means you are responsible for
+    our charges whatever the outcome, and in family cases the general position
+    is that each party meets their own costs.
+
+- id: cc_funding_fixed_fee
+  role: body
+  version: 1
+  text: >
+    We have agreed a fixed fee for the work described above. That fee covers
+    what is set out in this letter and nothing further. If the matter goes
+    beyond it, I will tell you before any additional work is done and we will
+    agree the basis for it.
+
+- id: cc_data_protection
+  role: body
+  version: 1
+  text: >
+    We hold your information securely and use it only to act for you. Our
+    privacy notice is enclosed and explains what we hold, why, and how long we
+    keep it.
+
+- id: client_what_i_need
+  role: body
+  version: 1
+  text: >
+    There are a few things I need from you before the next stage. I have listed
+    them below. If any of them is difficult to obtain, please tell me early
+    rather than close to the deadline, as there is usually something we can do
+    about it if we know in time.
+
+- id: client_reassurance
+  role: body
+  version: 1
+  text: >
+    I know this stage can feel slow and it is normal to find it frustrating.
+    Please do telephone me if you would like to talk anything through; it is
+    usually quicker than an exchange of emails.
+
+- id: client_costs_estimate_update
+  role: body
+  version: 1
+  text: >
+    My estimate for the next stage is set out below. It assumes matters proceed
+    as expected. If anything happens that would take us materially beyond it, I
+    will write to you before the work is done.
+
+- id: ord_consent_note
+  role: body
+  version: 1
+  text: >
+    This order records what the two of you agreed rather than a decision imposed
+    on either of you. It is no less binding for that, and the court expects it
+    to be complied with in the same way.
+
+- id: ord_deadline_list
+  role: body
+  version: 1
+  text: >
+    The dates in the order are listed below. Please put them in your diary now.
+    If a date falls on a weekend or a bank holiday it still stands, so it is
+    safer to work to the day before.
