@@ -78,10 +78,14 @@ def cmd_draft(args) -> int:
     (outdir / f"{stem}.values.json").write_text(
         json.dumps(values_template(letter), indent=2) + "\n", encoding="utf-8")
     (outdir / f"{stem}.spec.json").write_text(spec.to_json() + "\n", encoding="utf-8")
+    if args.docx:
+        from . import docx as docx_render
+        docx_render.write(letter, outdir / f"{stem}.docx")
 
     print(f"drafted  {lt['name']}")
     print(f"  to     {spec.recipient_class.value}")
-    print(f"  files  {outdir/stem}.txt, .fill.md, .values.json, .spec.json")
+    extra = ", .docx" if args.docx else ""
+    print(f"  files  {outdir/stem}.txt, .fill.md, .values.json, .spec.json{extra}")
     print(f"\n  tokens to complete: {len(letter.tokens)}")
     for tok in letter.tokens:
         from .tokens import lookup
@@ -122,6 +126,15 @@ def cmd_merge(args) -> int:
     out = pathlib.Path(args.out) if args.out else pathlib.Path(args.file).with_suffix(".merged.txt")
     out.write_text(merged, encoding="utf-8")
     print(f"merged -> {out}")
+    if args.docx:
+        if spec is None:
+            print("  --docx needs the .spec.json written alongside the draft", file=sys.stderr)
+            return 2
+        from . import docx as docx_render
+        from .compose import compose as _compose
+        letter = _compose(spec)
+        written = docx_render.write(letter, out.with_suffix(".docx"), values=values)
+        print(f"       -> {written}")
     if unresolved:
         print("  unresolved required tokens:")
         for t in unresolved:
@@ -146,6 +159,7 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("--wp", action="store_true", help="mark Without Prejudice")
     d.add_argument("--suppress-address", action="store_true",
                    help="address confidentiality applies to this matter")
+    d.add_argument("--docx", action="store_true", help="also write a .docx on the house style")
     d.add_argument("--out", default="drafts")
     d.set_defaults(fn=cmd_draft)
 
@@ -158,6 +172,7 @@ def main(argv: list[str] | None = None) -> int:
     m.add_argument("file")
     m.add_argument("--values", required=True)
     m.add_argument("--out")
+    m.add_argument("--docx", action="store_true", help="also write a merged .docx")
     m.set_defaults(fn=cmd_merge)
 
     args = p.parse_args(argv)

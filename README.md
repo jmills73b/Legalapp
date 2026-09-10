@@ -10,7 +10,14 @@ $ legalapp letter form-e-chaser --deadline 14d
 $ legalapp draft form_e_chaser --deadline 14
 $ legalapp merge drafts/form_e_chaser.txt --values values.json
 $ legalapp check some_existing_letter.txt
+$ legalapp draft client_care_letter --docx
 ```
+
+House style — page size, fonts, tab stops, signature gap — lives in
+`legalapp/library/house_style.yaml`, so a firm changes how its letters look
+without touching the renderer. A draft written before its tokens are filled
+highlights every placeholder, so a fee earner completing it in Word can see
+what is left at a glance.
 
 See [docs/DESIGN.md](docs/DESIGN.md) for the architecture — agent roster, pipeline,
 interface contract, and build order.
@@ -23,6 +30,7 @@ interface contract, and build order.
 | Deprecated terminology lexicon | done — auto-fixed, never silent |
 | Tone lexicon (deterministic half) | done |
 | Structure checks — WP marking, address suppression, enclosures | done |
+| DOCX output on the firm's house style | done — `--docx` on `draft` and `merge` |
 | Register checks — salutation/sign-off, deadline floor, plain language, advice to a litigant in person | done |
 | Paragraph library + composer + local merge | done, full 10-letter catalogue |
 | Client vs outbound review split | done |
@@ -48,7 +56,7 @@ interface contract, and build order.
 ## Install
 
 ```
-pip install -e ".[agents,dev]"
+pip install -e ".[agents,docx,dev]"
 pytest
 ```
 

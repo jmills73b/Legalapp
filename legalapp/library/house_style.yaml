@@ -1,0 +1,47 @@
+# House style for outgoing correspondence. A firm edits this file rather than
+# the renderer -- it is the same kind of asset as the paragraph library.
+page:
+  size: A4
+  margin_top_cm: 2.5
+  margin_bottom_cm: 2.5
+  margin_left_cm: 2.5
+  margin_right_cm: 2.5
+
+body:
+  font: Arial
+  size_pt: 11
+  line_spacing: 1.15
+  space_after_pt: 10
+  # UK correspondence is set ragged-right, not justified.
+  alignment: left
+
+firm_name:
+  size_pt: 14
+  bold: true
+  space_after_pt: 2
+
+ref_block:
+  # "Our ref:" and its value are separated by a tab stop, not by spaces --
+  # spaces go ragged in a proportional font.
+  tab_stop_cm: 3.2
+  size_pt: 10
+
+marking:
+  # WITHOUT PREJUDICE and similar.
+  bold: true
+  space_after_pt: 16
+
+subject:
+  bold: true
+  space_before_pt: 6
+  space_after_pt: 12
+
+signature_gap_lines: 4      # room to sign between the sign-off and the name
+
+enclosure:
+  size_pt: 10
+  space_before_pt: 14
+
+# Unfilled placeholders are highlighted so a fee earner completing the letter
+# in Word can see at a glance what is left.
+highlight_unfilled_tokens: true
