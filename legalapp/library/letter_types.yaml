@@ -1,0 +1,44 @@
+# Letter types. Recipient class is the field that matters most: it decides the
+# review path, the salutation, and whether the risk review runs at all.
+
+- id: form_e_chaser
+  name: Financial disclosure chaser (Form E)
+  recipient_class: other_side_solicitors
+  contains_advice: false
+  wp_marking: forbidden
+  requires_deadline: true
+  default_deadline_days: 14
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_financial
+    - intro_acting
+    - fin_form_e_outstanding
+    - req_reply_by_reasoned
+    - offer_call
+    - next_step_directions_neutral
+    - signoff_faithfully
+    - enc_form_e
+  required_paragraphs: [hdr_refs, hdr_subject_financial, signoff_faithfully]
+  enclosures: ["Form E of [CLIENT_FULL_NAME]"]
+  bespoke_slot: "Any specifics of what remains outstanding, inserted after the disclosure paragraph."
+
+- id: voluntary_disclosure_request
+  name: Voluntary financial disclosure request
+  recipient_class: other_side_solicitors
+  contains_advice: false
+  wp_marking: optional
+  requires_deadline: true
+  default_deadline_days: 21
+  paragraphs:
+    - hdr_refs
+    - hdr_subject_financial
+    - intro_acting
+    - fin_voluntary_proposal
+    - fin_disclosure_scope
+    - ncdr_invitation
+    - req_reply_by_reasoned
+    - offer_call
+    - signoff_faithfully
+  required_paragraphs: [hdr_refs, hdr_subject_financial, signoff_faithfully]
+  enclosures: []
+  bespoke_slot: "Any matter-specific framing of why voluntary exchange suits this case."

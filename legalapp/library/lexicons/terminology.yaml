@@ -1,0 +1,47 @@
+# Deprecated family law terminology, England & Wales.
+# A letter using the old vocabulary reads as dated to every solicitor who
+# receives it. Pure lexicon -- free, instant, and auto-fixable.
+- pattern: '\bcustody\b'
+  replacement: 'child arrangements'
+  since: 2014
+  authority: 'Children and Families Act 2014 -- residence and contact orders replaced'
+- pattern: '\baccess\b(?!\s+to\s+(?:the\s+)?(?:file|documents|papers|funds|information))'
+  replacement: 'time with the children'
+  since: 2014
+  authority: 'Children and Families Act 2014'
+- pattern: '\bresidence order\b'
+  replacement: 'child arrangements order'
+  since: 2014
+  authority: 'Children and Families Act 2014'
+- pattern: '\bcontact order\b'
+  replacement: 'child arrangements order'
+  since: 2014
+  authority: 'Children and Families Act 2014'
+- pattern: '\bancillary relief\b'
+  replacement: 'financial remedy'
+  since: 2011
+  authority: 'Family Procedure Rules 2010, in force 6 April 2011'
+- pattern: '\bpetitioner\b'
+  replacement: 'applicant'
+  since: 2022
+  authority: 'Divorce, Dissolution and Separation Act 2020, in force 6 April 2022'
+- pattern: '\bpetition\b'
+  replacement: 'application'
+  since: 2022
+  authority: 'Divorce, Dissolution and Separation Act 2020'
+- pattern: '\bdecree nisi\b'
+  replacement: 'conditional order'
+  since: 2022
+  authority: 'Divorce, Dissolution and Separation Act 2020'
+- pattern: '\bdecree absolute\b'
+  replacement: 'final order'
+  since: 2022
+  authority: 'Divorce, Dissolution and Separation Act 2020'
+- pattern: '\bunreasonable behaviour\b'
+  replacement: 'irretrievable breakdown'
+  since: 2022
+  authority: 'No-fault divorce -- conduct is no longer a ground'
+- pattern: '\bmatrimonial home\b'
+  replacement: 'family home'
+  since: null
+  authority: 'House style -- preferred in correspondence'

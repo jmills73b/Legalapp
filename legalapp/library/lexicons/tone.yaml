@@ -1,0 +1,48 @@
+# House standard for constructive correspondence.
+#
+# Most family solicitors here practise under the Resolution Code of Practice,
+# which requires non-confrontational correspondence. In financial remedy the
+# general rule is no order as to costs (FPR 28.3(6)), subject to the court
+# taking a broad view of litigation conduct (PD28A para 4.4) -- so an
+# inflammatory letter can cost the client money directly.
+#
+# This file is firm property. A partner should own it.
+banned_phrases:
+  - pattern: '\bwe note with (?:some )?(?:surprise|concern|dismay)\b'
+    why: 'Reads as a barb rather than a position.'
+    suggestion: 'State the fact and what you propose.'
+  - pattern: '\bit is regrettable that\b'
+    why: 'Characterises the other party rather than the issue.'
+    suggestion: 'Describe the outstanding item plainly.'
+  - pattern: '\bas you (?:are well|well) aware\b'
+    why: 'Implies bad faith.'
+    suggestion: 'Simply restate the position.'
+  - pattern: '\bsingularly failed\b'
+    why: 'Accusatory characterisation of conduct.'
+    suggestion: '"has not yet provided" states the same fact neutrally.'
+  - pattern: '\bwe are (?:frankly )?(?:astonished|appalled|amazed)\b'
+    why: 'Escalates without advancing the matter.'
+    suggestion: 'Remove; state the consequence instead.'
+  - pattern: "\\byour client(?:'s)? (?:refusal|obstruction|intransigence)\\b"
+    why: 'Characterises motive rather than describing what has happened.'
+    suggestion: 'Describe the act: "your client has not yet responded to".'
+  - pattern: '\bfailure to engage\b'
+    why: 'Reads as an accusation where a neutral description would do.'
+    suggestion: '"we have not yet had a reply on" is neutral and equally clear.'
+  - pattern: '\bin no uncertain terms\b'
+    why: 'Adversarial register.'
+    suggestion: 'Remove.'
+  - pattern: '\b(?:we|our client) (?:will|shall) not hesitate to\b'
+    why: 'Threat framing.'
+    suggestion: 'State the step you may take and why, without the flourish.'
+
+# Adjectives applied to a person rather than to a described act.
+conduct_adjectives:
+  - outrageous
+  - blatant
+  - deliberate
+  - wilful
+  - flagrant
+  - evasive
+  - obstructive
+  - unreasonable

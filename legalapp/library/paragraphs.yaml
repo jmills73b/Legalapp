@@ -1,0 +1,123 @@
+# The paragraph library.
+#
+# This is the asset, not the prompts. On a real deployment these paragraphs are
+# harvested from the firm's own precedent bank so the first letter already
+# sounds like the firm; what follows is a starter set.
+#
+# Every paragraph carries provenance: id + version, so any assembled letter can
+# answer "why does it say this?".
+
+- id: hdr_refs
+  role: heading
+  version: 1
+  text: |
+    [FIRM_NAME]
+    [FIRM_ADDRESS_BLOCK]
+
+    Our ref:   [MATTER_REF]
+    Your ref:  [THEIR_REF]
+    Date:      [LETTER_DATE]
+
+- id: hdr_wp
+  role: marking
+  version: 1
+  text: |
+    WITHOUT PREJUDICE
+
+- id: hdr_subject_financial
+  role: heading
+  version: 1
+  text: |
+    Dear [RECIPIENT_SALUTATION]
+
+    Re: [CLIENT_FULL_NAME] and [OTHER_PARTY_NAME] -- financial remedy
+
+- id: hdr_subject_children
+  role: heading
+  version: 1
+  text: |
+    Dear [RECIPIENT_SALUTATION]
+
+    Re: [CLIENT_FULL_NAME] and [OTHER_PARTY_NAME] -- arrangements for the children
+
+- id: intro_acting
+  role: body
+  version: 1
+  text: >
+    We act for [CLIENT_FULL_NAME] and write further to our earlier
+    correspondence in this matter.
+
+- id: fin_form_e_outstanding
+  role: body
+  version: 1
+  text: >
+    Your client's Form E fell due on [DISCLOSURE_DUE_DATE]. We have not yet
+    received it. Our client filed and served hers in accordance with the
+    timetable, and we enclose a further copy for convenience.
+
+- id: fin_voluntary_proposal
+  role: body
+  version: 1
+  text: >
+    Before either party incurs the cost of an application, we propose a
+    voluntary exchange of financial disclosure. Our client is willing to
+    complete a Form E and exchange it simultaneously with your client, on a
+    date convenient to you both.
+
+- id: fin_disclosure_scope
+  role: body
+  version: 1
+  text: >
+    For the avoidance of doubt, we suggest the exchange cover the twelve months
+    of statements for each account, the last three payslips or two years of
+    accounts, current mortgage and pension statements, and any property
+    valuation either party relies on.
+
+- id: req_reply_by_reasoned
+  role: body
+  version: 1
+  text: >
+    We would be grateful for your response by [RESPONSE_DEADLINE]. We suggest
+    that date so that the parties can keep to the directions timetable and avoid
+    the additional cost of an adjournment.
+
+- id: offer_call
+  role: body
+  version: 1
+  text: >
+    If there is a difficulty in meeting that date, please telephone the writer.
+    We would much rather agree a short extension between us than trouble the
+    court with it.
+
+- id: ncdr_invitation
+  role: body
+  version: 1
+  text: >
+    We remind both parties of the expectation that non-court dispute resolution
+    is considered at each stage. Our client is willing to attend mediation or a
+    private financial dispute resolution appointment, and we would welcome your
+    client's views.
+
+- id: next_step_directions_neutral
+  role: body
+  version: 1
+  text: >
+    If we have not heard from you by that date, our client's instructions are to
+    apply to the court for directions. We would prefer to avoid that step and
+    the costs it involves, which is why we have set out the position now.
+
+- id: signoff_faithfully
+  role: closing
+  version: 1
+  text: |
+    Yours faithfully
+
+    [FEE_EARNER_NAME]
+    [FEE_EARNER_ROLE]
+    [FIRM_NAME]
+
+- id: enc_form_e
+  role: enclosure
+  version: 1
+  text: |
+    Enc: Form E of [CLIENT_FULL_NAME]
